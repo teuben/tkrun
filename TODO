@@ -1,0 +1,11 @@
+(See also the TODO list in the manual page)
+
+Short term:
+
+  - inline help as the cursor moves over the keyword (can tk do that?)
+  - read keyword files for persistent execution
+
+Longer term:
+
+  - change the geometry mananger over from 'pack' to 'grid'
+ 
