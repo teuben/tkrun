@@ -4,13 +4,16 @@ EXPORT = tkrun.c tkrun.1 tkrun.lsm Makefile \
 	sample1 \
 	CHANGES COPYING README TODO \
 	adass97.ps.gz
-VERSION = 0.2beta
+VERSION = 0.2c
 FTPDIR = /home/ftp/pub/nemo
 
 CFLAGS = -g
 
 help:
 	@echo none
+
+clean:
+	rm -f core *.o tkrun testscript.tk  scratchrun.tk
 
 
 tkrun: tkrun.c

@@ -477,6 +477,7 @@ int parse(FILE *fp, FILE *tp, FILE *sp, int maxw, Widget *w)
                 fprintf(tp,"label %s -text %s:\n",tkey,w[nw].key);
                 fprintf(tp,"bind %s <1> \"my_help 0 $%s\"\n",tkey,tvar);
                 fprintf(tp,"bind %s <2> \"my_help 1 $%s\"\n",tkey,tvar);
+		fprintf(tp,"# fix bug in next line\n");
                 fprintf(tp,"bind %s <3> \"set %s \\\"\\\"\"\n",tkey,tvar,ip[0]);
 
                 fprintf(tp,"pack append %s %s %s %s %s\n",
