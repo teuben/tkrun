@@ -4,7 +4,6 @@
 #include <unistd.h>
 
 #define VERSION "TkRun Version 0.2c 25-nov-00 PJT"
-/* note printf error in this code */
 
 				/* tcl/tk startup code */
 char *preamble=\
@@ -477,8 +476,8 @@ int parse(FILE *fp, FILE *tp, FILE *sp, int maxw, Widget *w)
                 fprintf(tp,"label %s -text %s:\n",tkey,w[nw].key);
                 fprintf(tp,"bind %s <1> \"my_help 0 $%s\"\n",tkey,tvar);
                 fprintf(tp,"bind %s <2> \"my_help 1 $%s\"\n",tkey,tvar);
-		fprintf(tp,"# fix bug in next line\n");
-                fprintf(tp,"bind %s <3> \"set %s \\\"\\\"\"\n",tkey,tvar,ip[0]);
+		fprintf(tp,"# is bug in next line fixed now?\n");
+                fprintf(tp,"bind %s <3> \"set %s \\\"%s\\\"\"\n",tkey,tvar,ip[0]);
 
                 fprintf(tp,"pack append %s %s %s %s %s\n",
                         t,tkey,  "{left frame center filly}",

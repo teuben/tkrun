@@ -10,7 +10,7 @@ FTPDIR = /home/ftp/pub/nemo
 CFLAGS = -g
 
 help:
-	@echo none
+	@echo There is no makefile help here
 
 clean:
 	rm -f core *.o tkrun testscript.tk  scratchrun.tk
