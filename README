@@ -39,5 +39,9 @@ Note: if the tar file version contains the word beta, e.g.
 tkrun-0.2beta.tar.gz, the version is just a beta snapshot of
 that version, and not final. Use at your own risk.
 
+Note2: sometime in November 2000, I noticed the announcement of a similar
+program under Freshmeat, or Linux Applications, and this should be tracked
+down.
+
 - Peter Teuben
 
