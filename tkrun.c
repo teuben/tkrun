@@ -4,7 +4,7 @@
 #include <unistd.h>
 
 #define VERSION "TkRun Version 0.2c 25-nov-00 PJT"
-
+/* note printf error in this code */
 
 				/* tcl/tk startup code */
 char *preamble=\
