@@ -3,7 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#define VERSION "TkRun Version 0.2c 25-nov-00 PJT"
+#define VERSION "TkRun $Id$"
 
 				/* tcl/tk startup code */
 char *preamble=\

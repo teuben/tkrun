@@ -4,7 +4,7 @@ EXPORT = tkrun.c tkrun.1 tkrun.lsm Makefile \
 	sample1 \
 	CHANGES COPYING README TODO \
 	adass97.ps.gz
-VERSION = 0.2d
+VERSION = 0.2e
 FTPDIR = apus.astro.umd.edu:/home/ftp/pub/nemo
 
 CFLAGS = -g
