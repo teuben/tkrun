@@ -2,7 +2,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#define VERSION "TkRun Version 0.2b 30-jan-98 PJT"
+#define VERSION "TkRun Version 0.2c 25-nov-00 PJT"
 
 
 				/* tcl/tk startup code */
@@ -91,7 +91,7 @@ void freestrings(string *);
 void example(void);
 
 
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
     FILE *fp, *tp, *sp;
     Widget widgets[MAXW];
@@ -221,6 +221,7 @@ void main(int argc, char **argv)
     sprintf(cmd,"%s -f %s",wishpath,tkpath);
     fprintf(stderr,"Running %s\n",cmd);
     system(cmd);
+    return 0;
 }
 
 #define MAXLINELEN 256
