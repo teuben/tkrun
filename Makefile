@@ -4,8 +4,8 @@ EXPORT = tkrun.c tkrun.1 tkrun.lsm Makefile \
 	sample1 \
 	CHANGES COPYING README TODO \
 	adass97.ps.gz
-VERSION = 0.2c
-FTPDIR = /home/ftp/pub/nemo
+VERSION = 0.2d
+FTPDIR = apus.astro.umd.edu:/home/ftp/pub/nemo
 
 CFLAGS = -g
 
@@ -41,4 +41,11 @@ diff: tkrun
 
 update:
 	cp testscript.tk  testscript0.tk 
+
+
+dist:
+	cvs -q export -D tomorrow -d tkrun-$(VERSION) tkrun
+	tar zcf tkrun-$(VERSION).tar.gz tkrun-$(VERSION)
+	rm -rf tkrun-$(VERSION)
+	scp tkrun-$(VERSION).tar.gz $(FTPDIR)
 
