@@ -1,4 +1,3 @@
-
 tkrun is a tk script generator allows you to build a Tcl/Tk GUI that
 executes another program or script. You don't need to learn Tcl/Tk
 (although that is still much easier than learning to program a GUI in a
