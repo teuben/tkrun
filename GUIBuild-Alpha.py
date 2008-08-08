@@ -254,8 +254,6 @@ class PyRun:                                                                    
       
       root = Tk()                                                             # Create Parent Window
       root.title("%s" %self._fun.__name__)                                    # Name Window with Function Name
-      topmenu = Menu(root,bd=1,activeborderwidth=0)
-      root.config(menu=topmenu,background="Grey")
       
       paramlength = 0
       extrarow    = 0
@@ -265,21 +263,21 @@ class PyRun:                                                                    
             paramlength = len(paramtmp)                                       # Store the number maximum number of parameters for one variable
          else:
             pass
-         if len(paramtmp) > 14:
-            extrarow = extrarow + long(len(paramtmp)/14)                      # Find how many extra lines on the window are needed for extra rows of parameters
+         if len(paramtmp) > 13:
+            extrarow = extrarow + long(len(paramtmp)/13)                      # Find how many extra lines on the window are needed for extra rows of parameters
       
       if (self._fun.func_code.co_argcount+extrarow) == 15:                    # Set default window height if over sMaximum number of lines for a window.
          WINheight = 1000
       else:
          WINheight = (50+40*self._fun.func_code.co_argcount+40*extrarow)      # Adjust Height if under maximum.
       
-      if paramlength >= 14:                                                   # Set default window width if over sMaximum number of lines for a window.
-         WINwidth = 1250
+      if paramlength >= 13:                                                   # Set default window width if over sMaximum number of lines for a window.
+         WINwidth = 1280
       else:
          if paramlength <= 5:                                                 # Set minimum window width
-            WINwidth = 515
+            WINwidth = 555
          else:
-            WINwidth = (475+75*(paramlength-5))                               # Set intermediate window widths
+            WINwidth = (515+75*(paramlength-5))                               # Set intermediate window widths
       root.geometry("%dx%d" %(WINwidth,WINheight))                            # Change Size of GUI to represent amount of variables
       
       menu = Menu(root)                                                       # Create a menu
@@ -293,18 +291,20 @@ class PyRun:                                                                    
       menu.add_cascade(label="Help", menu=helpmenu)
       helpmenu.add_command(label="Help", command=self.helper)
       
-      frame=Frame(root,bd=2)
+      frame = Frame(root, bd=0)
+      frame.grid_rowconfigure(0, weight=0)
+      frame.grid_columnconfigure(0, weight=0)
       canvas = Canvas(frame)
       scrollbar = Scrollbar(frame)
       canvas.config(yscrollcommand=scrollbar.set)
-      canvas['width'] = WINwidth
+      canvas['background'] = 'gray80'
+      canvas['width'] = (WINwidth-40)
       canvas['height'] =(50+40*self._fun.func_code.co_argcount+40*extrarow)
       canvas['scrollregion'] = (0, 0, 0, (70+40*self._fun.func_code.co_argcount+40*extrarow))
-      canvas.place(x=0,y=0)
+      canvas.pack(side=LEFT)
       scrollbar.config(command=canvas.yview)
       scrollbar.pack(side=RIGHT,fill=Y)
-      frame.pack()
-      
+      frame.pack(anchor=N+W,fill=BOTH)
 
       for a in range(self._fun.func_code.co_argcount):
          textvar = "tmp%d = StringVar()\n" %a                                          # Initilize Dynamic Variable to store default values to appear in GUI
@@ -322,13 +322,13 @@ class PyRun:                                                                    
          DISP.append("self.Label%d.place(x=10,y=(5+%d))" %(a,(a*40+40*self._place)))
          
          if self.FieldlistOrder[a] == "ENTRY":                                         # Make Entry Class if quoted in Docstring for current Variable
-            DISP.append("self.Field%d = Entry(root,textvariable=\
+            DISP.append("self.Field%d = Entry(canvas,textvariable=\
             tmp%d,width=50,bd=1,background='White',selectbackground='Black')" %(a,a))
             DISP.append("self.Field%d.place(x=100,y=(5+%d))" %(a,(a*40+40*self._place)))
          elif self.FieldlistOrder[a] == "SCALE":                                       # Make Scale Class if quoted in Docstring for current Variable
             Scalelist = self.ParamlistOrder[a].split(':')
             
-            DISP.append("self.Field%d = Scale(root,from_=%d,to=%d,resolution=%f,\
+            DISP.append("self.Field%d = Scale(canvas,from_=%d,to=%d,resolution=%f,\
             orient=HORIZONTAL,length=350,width=9,font=8,variable=tmp%d)"\
             %(a,float(Scalelist[0]),float(Scalelist[1]),float(Scalelist[2]),a))
             DISP.append("self.Field%d.place(x=100,y=(5+%d))" %(a,(a*40+40*self._place)))
@@ -350,12 +350,12 @@ class PyRun:                                                                    
                else:
                   DISP.append("self.CheckVar%d = IntVar()" %(self._checkcount))
                
-               DISP.append("self.Field%d = Checkbutton(root, text='%s',variable=self.CheckVar%d)" %(a,str(Checklist[b]),self._checkcount))
-               DISP.append("self.Field%d.place(x=100+(75*%d),y=(5+%d))" %(a,(b-14*long(b/14)),(a*40+long(b/14)*40+40*self._place)))
+               DISP.append("self.Field%d = Checkbutton(canvas, text='%s',variable=self.CheckVar%d)" %(a,str(Checklist[b]),self._checkcount))
+               DISP.append("self.Field%d.place(x=100+(75*%d),y=(5+%d))" %(a,(b-13*long(b/13)),(a*40+long(b/13)*40+40*self._place)))
                DISP.append("self._states%d.append(self.CheckVar%d)" %(self._statecount,self._checkcount))
             
-            if len(Checklist) >= 14:
-               self._place=self._place+long(len(Checklist)/14)
+            if len(Checklist) >= 13:
+               self._place=self._place+long(len(Checklist)/13)
          elif self.FieldlistOrder[a] == "RADIO":                                       # Make Radio Class if quoted in Docstring for current Variable
             Radiolist = self.ParamlistOrder[a].split(',')
             self._radcount = self._radcount+1
@@ -368,34 +368,34 @@ class PyRun:                                                                    
                else:
                   DynRadioVar = "self.RadioVar%d = IntVar()" %(self._radcount)
                exec(DynRadioVar)
-               DISP.append("self.Field%d = Radiobutton(root, text='%s', value='%s',\
+               DISP.append("self.Field%d = Radiobutton(canvas, text='%s', value='%s',\
                variable=self.RadioVar%d)" %(a,str(Radiolist[c]),str(Radiolist[c]),\
                self._radcount))
                DISP.append("self.Field%d.place(x=100+(60*%d),y=(5+%d))"\
-               %(a,(c-14*long(c/14)),(a*40+long(c/14)*40+40*self._place)))
+               %(a,(c-13*long(c/13)),(a*40+long(c/13)*40+40*self._place)))
             
-            if len(Radiolist) >= 14:
-               self._place=self._place+long(len(Radiolist)/14)
+            if len(Radiolist) >= 13:
+               self._place=self._place+long(len(Radiolist)/13)
          elif self.FieldlistOrder[a] == "INFILE":                                      # Make Infile if quoted in Docstring for current Variable
             DynInFile = "self.InFile%d = StringVar()" %(self.Ifieldentry)
             exec(DynInFile)
-            DISP.append("self.Field%d = Entry(root,textvariable=self.InFile%d,width=50,bd=1,background='White',selectbackground='Black')"%(a,self.Ifieldentry))
+            DISP.append("self.Field%d = Entry(canvas,textvariable=self.InFile%d,width=50,bd=1,background='White',selectbackground='Black')"%(a,self.Ifieldentry))
             DISP.append("self.Field%d.bind('<Button-3>', self.GetFile)" %a)
             DISP.append("self.Field%d.place(x=100,y=(5+%d))" %(a,a*40+40*self._place))
-            DISP.append("self.Label%d_%d = Label(root,text='In',relief=RIDGE)" %(a,a))
+            DISP.append("self.Label%d_%d = Label(canvas,text='In',relief=RIDGE)" %(a,a))
             DISP.append("self.Label%d_%d.place(x=460,y=(5+%d))" %(a,a,a*40+40*self._place))
             self.Ifieldentry = self.Ifieldentry+1
          elif self.FieldlistOrder[a] == "OUTFILE":                                     # Make Outfile if quoted in Docstring for current Variable
             DynOutFile = "self.OutFile%d = StringVar()" %(self.Ofieldentry)
             exec(DynOutFile)
-            DISP.append("self.Field%d = Entry(root,textvariable=self.OutFile%d,width=50,bd=1,background='White',selectbackground='Black')" %(a,self.Ofieldentry))
+            DISP.append("self.Field%d = Entry(canvas,textvariable=self.OutFile%d,width=50,bd=1,background='White',selectbackground='Black')" %(a,self.Ofieldentry))
             DISP.append("self.Field%d.bind('<Button-3>', self.SaveFile)" %a)
             DISP.append("self.Field%d.place(x=100,y=(5+%d))" %(a,a*40+40*self._place))
-            DISP.append("self.Label%d_%d = Label(root,text='Out',relief=RIDGE)" %(a,a))
+            DISP.append("self.Label%d_%d = Label(canvas,text='Out',relief=RIDGE)" %(a,a))
             DISP.append("self.Label%d_%d.place(x=460,y=(5+%d))" %(a,a,a*40+40*self._place))
             self.Ofieldentry = self.Ofieldentry+1
          else:                                                                         # Default to Entry Class if not in Docstring
-            DISP.append("self.Field%d = Entry(root,textvariable=tmp%d,width=50,bd=1,background='White',selectbackground='Black')" %(a,a))
+            DISP.append("self.Field%d = Entry(canvas,textvariable=tmp%d,width=50,bd=1,background='White',selectbackground='Black')" %(a,a))
             DISP.append("self.Field%d.place(x=100,y=(5+%d))" %(a,a*40+40*self._place))
       for d in range(len(DISP)):
          exec(DISP[d])
