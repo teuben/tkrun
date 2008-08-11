@@ -266,7 +266,7 @@ class PyRun:                                                                    
          if len(paramtmp) > 13:
             extrarow = extrarow + long(len(paramtmp)/13)                      # Find how many extra lines on the window are needed for extra rows of parameters
       
-      if (self._fun.func_code.co_argcount+extrarow) == 15:                    # Set default window height if over sMaximum number of lines for a window.
+      if (self._fun.func_code.co_argcount+extrarow) >= 17:                    # Set default window height if over sMaximum number of lines for a window.
          WINheight = 1000
       else:
          WINheight = (50+40*self._fun.func_code.co_argcount+40*extrarow)      # Adjust Height if under maximum.
@@ -298,12 +298,12 @@ class PyRun:                                                                    
       scrollbar = Scrollbar(frame)
       canvas.config(yscrollcommand=scrollbar.set)
       canvas['background'] = 'gray80'
-      canvas['width'] = (WINwidth-40)
+      canvas['width'] = (WINwidth-20)
       canvas['height'] =(50+40*self._fun.func_code.co_argcount+40*extrarow)
       canvas['scrollregion'] = (0, 0, 0, (70+40*self._fun.func_code.co_argcount+40*extrarow))
       canvas.pack(side=LEFT)
       scrollbar.config(command=canvas.yview)
-      scrollbar.pack(side=RIGHT,fill=Y)
+      scrollbar.pack(side=LEFT,fill=Y)
       frame.pack(anchor=N+W,fill=BOTH)
 
       for a in range(self._fun.func_code.co_argcount):
@@ -317,21 +317,21 @@ class PyRun:                                                                    
          
          exec(textvar)                                                                 # Make Static Version of each Dynamic Variable
 
-         DISP.append("self.Label%d = Label(canvas,text='%s:')"\
+         DISP.append("self.Label%d = Label(frame,text='%s:')"\
          %(a,self._fun.func_code.co_varnames[a]))   # Create Label for each Variable
-         DISP.append("self.Label%d.place(x=10,y=(5+%d))" %(a,(a*40+40*self._place)))
+         DISP.append("canvas.create_window(20, (15+%d), width=35, height=20,window=self.Label%d,anchor=CENTER)" %((a*40+40*self._place),a))
          
          if self.FieldlistOrder[a] == "ENTRY":                                         # Make Entry Class if quoted in Docstring for current Variable
-            DISP.append("self.Field%d = Entry(canvas,textvariable=\
+            DISP.append("self.Field%d = Entry(root,textvariable=\
             tmp%d,width=50,bd=1,background='White',selectbackground='Black')" %(a,a))
-            DISP.append("self.Field%d.place(x=100,y=(5+%d))" %(a,(a*40+40*self._place)))
+            DISP.append("canvas.create_window(275, (15+%d), width=350, height=20,window=self.Field%d,anchor=CENTER)" %((a*40+40*self._place),a))
          elif self.FieldlistOrder[a] == "SCALE":                                       # Make Scale Class if quoted in Docstring for current Variable
             Scalelist = self.ParamlistOrder[a].split(':')
             
-            DISP.append("self.Field%d = Scale(canvas,from_=%d,to=%d,resolution=%f,\
+            DISP.append("self.Field%d = Scale(root,from_=%d,to=%d,resolution=%f,\
             orient=HORIZONTAL,length=350,width=9,font=8,variable=tmp%d)"\
             %(a,float(Scalelist[0]),float(Scalelist[1]),float(Scalelist[2]),a))
-            DISP.append("self.Field%d.place(x=100,y=(5+%d))" %(a,(a*40+40*self._place)))
+            DISP.append("canvas.create_window(275, (15+%d), width=350, height=40,window=self.Field%d,anchor=CENTER)" %((a*40+40*self._place),a))
          elif self.FieldlistOrder[a] == "CHECK":                                       # Make Check Class if quoted in Docstring for current Variable
             Checklist = self.ParamlistOrder[a].split(',')
             self._checkcount = self._checkcount+1
@@ -350,8 +350,9 @@ class PyRun:                                                                    
                else:
                   DISP.append("self.CheckVar%d = IntVar()" %(self._checkcount))
                
-               DISP.append("self.Field%d = Checkbutton(canvas, text='%s',variable=self.CheckVar%d)" %(a,str(Checklist[b]),self._checkcount))
-               DISP.append("self.Field%d.place(x=100+(75*%d),y=(5+%d))" %(a,(b-13*long(b/13)),(a*40+long(b/13)*40+40*self._place)))
+               DISP.append("self.Field%d = Checkbutton(root, text='%s',variable=self.CheckVar%d)" %(a,str(Checklist[b]),self._checkcount))
+               DISP.append("canvas.create_window(%d, (15+%d), width=60, height=20,window=self.Field%d,anchor=CENTER)"\
+               %((150+long((b-13*long(b/13))*75)),(a*40+long(b/13)*40+40*self._place),a))
                DISP.append("self._states%d.append(self.CheckVar%d)" %(self._statecount,self._checkcount))
             
             if len(Checklist) >= 13:
@@ -368,35 +369,35 @@ class PyRun:                                                                    
                else:
                   DynRadioVar = "self.RadioVar%d = IntVar()" %(self._radcount)
                exec(DynRadioVar)
-               DISP.append("self.Field%d = Radiobutton(canvas, text='%s', value='%s',\
+               DISP.append("self.Field%d = Radiobutton(root, text='%s', value='%s',\
                variable=self.RadioVar%d)" %(a,str(Radiolist[c]),str(Radiolist[c]),\
                self._radcount))
-               DISP.append("self.Field%d.place(x=100+(60*%d),y=(5+%d))"\
-               %(a,(c-13*long(c/13)),(a*40+long(c/13)*40+40*self._place)))
+               DISP.append("canvas.create_window(%d, (15+%d), width=60, height=20,window=self.Field%d,anchor=CENTER)"\
+               %((150+long((c-13*long(c/13))*75)),(a*40+long(c/13)*40+40*self._place),a))
             
             if len(Radiolist) >= 13:
                self._place=self._place+long(len(Radiolist)/13)
          elif self.FieldlistOrder[a] == "INFILE":                                      # Make Infile if quoted in Docstring for current Variable
             DynInFile = "self.InFile%d = StringVar()" %(self.Ifieldentry)
             exec(DynInFile)
-            DISP.append("self.Field%d = Entry(canvas,textvariable=self.InFile%d,width=50,bd=1,background='White',selectbackground='Black')"%(a,self.Ifieldentry))
+            DISP.append("self.Field%d = Entry(root,textvariable=self.InFile%d,width=50,bd=1,background='White',selectbackground='Black')"%(a,self.Ifieldentry))
             DISP.append("self.Field%d.bind('<Button-3>', self.GetFile)" %a)
-            DISP.append("self.Field%d.place(x=100,y=(5+%d))" %(a,a*40+40*self._place))
-            DISP.append("self.Label%d_%d = Label(canvas,text='In',relief=RIDGE)" %(a,a))
-            DISP.append("self.Label%d_%d.place(x=460,y=(5+%d))" %(a,a,a*40+40*self._place))
+            DISP.append("canvas.create_window(275, (15+%d), width=350, height=20,window=self.Field%d,anchor=CENTER)" %((a*40+40*self._place),a))
+            DISP.append("self.Label%d_%d = Label(root,text='In',relief=RIDGE)" %(a,a))
+            DISP.append("canvas.create_window(472, (15+%d), width=25, height=20,window=self.Label%d_%d,anchor=CENTER)" %((a*40+40*self._place),a,a))
             self.Ifieldentry = self.Ifieldentry+1
          elif self.FieldlistOrder[a] == "OUTFILE":                                     # Make Outfile if quoted in Docstring for current Variable
             DynOutFile = "self.OutFile%d = StringVar()" %(self.Ofieldentry)
             exec(DynOutFile)
-            DISP.append("self.Field%d = Entry(canvas,textvariable=self.OutFile%d,width=50,bd=1,background='White',selectbackground='Black')" %(a,self.Ofieldentry))
+            DISP.append("self.Field%d = Entry(root,textvariable=self.OutFile%d,width=50,bd=1,background='White',selectbackground='Black')" %(a,self.Ofieldentry))
             DISP.append("self.Field%d.bind('<Button-3>', self.SaveFile)" %a)
-            DISP.append("self.Field%d.place(x=100,y=(5+%d))" %(a,a*40+40*self._place))
-            DISP.append("self.Label%d_%d = Label(canvas,text='Out',relief=RIDGE)" %(a,a))
-            DISP.append("self.Label%d_%d.place(x=460,y=(5+%d))" %(a,a,a*40+40*self._place))
+            DISP.append("canvas.create_window(275, (15+%d), width=350, height=20,window=self.Field%d,anchor=CENTER)" %((a*40+40*self._place),a))
+            DISP.append("self.Label%d_%d = Label(root,text='Out',relief=RIDGE)" %(a,a))
+            DISP.append("canvas.create_window(472, (15+%d), width=25, height=20,window=self.Label%d_%d,anchor=CENTER)" %((a*40+40*self._place),a,a))
             self.Ofieldentry = self.Ofieldentry+1
          else:                                                                         # Default to Entry Class if not in Docstring
-            DISP.append("self.Field%d = Entry(canvas,textvariable=tmp%d,width=50,bd=1,background='White',selectbackground='Black')" %(a,a))
-            DISP.append("self.Field%d.place(x=100,y=(5+%d))" %(a,a*40+40*self._place))
+            DISP.append("self.Field%d = Entry(root,textvariable=tmp%d,width=50,bd=1,background='White',selectbackground='Black')" %(a,a))
+            DISP.append("canvas.create_window(275, (15+%d), width=350, height=20,window=self.Field%d,anchor=CENTER)" %((a*40+40*self._place),a))
       for d in range(len(DISP)):
          exec(DISP[d])
 
