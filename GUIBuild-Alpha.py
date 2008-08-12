@@ -80,42 +80,6 @@ class PyRun:                                                                    
    def Quit(self):                                                               # Quit Button Function
       sys.exit()
    
-   def GetFile(self,event):
-      """Function used to Open Files"""
-      if self._IFileClick == self.IFileTotal:                                    # Determine if user has tried to change InFile Entries too many times
-         print "Warning! Current Version Only Supports using each InFile Widget once and in Order! Clearing Entries."
-         for a in range(self.IFileTotal):
-            IFileClear = "self.InFile%d.set('')" %a
-            exec(IFileClear)                                                     # Clear all Entries using GetFile Function
-         self._IFileClick = 0                                                    # Reset Click Count
-         self._ifilecount = 0                                                    # Reset Variable Count
-      else:
-         currentdir = os.getcwd()
-         filename = askopenfilename(initialdir=currentdir)                       # Open File Browser
-         if filename:
-            DynFileAssign = "self.InFile%d.set('%s')" %(self._ifilecount,filename)
-            exec(DynFileAssign)                                                  # Set Entries using GetFile Function to Proper File Name
-         self._ifilecount = self._ifilecount+1
-         self._IFileClick = self._IFileClick+1
-
-   
-   def SaveFile(self,event):
-      """Function used to Save Files"""
-      if self._OFileClick == self.OFileTotal:                                    # Determine if user has tried to change OutFile Entries too many times
-         print "Warning! Current Version Only Supports using each OutFile Widget once and in Order! Clearing Entries."
-         for a in range(self.OFileTotal):
-            OFileClear = "self.OutFile%d.set('')" %a
-            exec(OFileClear)                                                     # Clear all Entries using SaveFile Function
-         self._OFileClick = 0                                                    # Reset Click Count
-         self._ofilecount = 0                                                    # Reset Variable Count
-      else:
-         currentdir = os.getcwd()
-         filename = asksaveasfilename(initialdir=currentdir)                     # Open File Browser
-         if filename:
-            DynFileAssign = "self.OutFile%d.set('%s')" %(self._ofilecount,filename)
-            exec(DynFileAssign)                                                  # Set Entries using SaveFile Function to Proper File Name
-         self._ofilecount = self._ofilecount+1
-         self._OFileClick = self._OFileClick+1
          
    def helper(self):
       """Displays a Help Window compiled from the Doc String"""
@@ -160,13 +124,12 @@ class PyRun:                                                                    
       
       text.insert(END,"\nArguments Quoted by Docstring:\n")
       for c in range(len(self.VarlistOrder)):
-         if self.VarlistOrder[c] != 'BLANK':
+         if self.ValuelistOrder[c] != 'BLANK':
             text.insert(END,"%2s= %s \n" %(self.VarlistOrder[c],self.ValuelistOrder[c]))
          else:
             text.insert(END,"%2s= (Not Defined in Doc String) \n" %(self._fun.\
             func_code.co_varnames[c]))
             DocFlag=1
-            print DocFlag
       
       text.insert(END,"\nArguments To be passed to function by GUI:\n")
       ArgCheckList = self.GetValues()                                          # get Current Values in the GUI
@@ -252,9 +215,6 @@ class PyRun:                                                                    
          else:
             pass
       
-      root = Tk()                                                             # Create Parent Window
-      root.title("%s" %self._fun.__name__)                                    # Name Window with Function Name
-      
       paramlength = 0
       extrarow    = 0
       for e in range(len(self.ParamlistOrder)):
@@ -272,40 +232,42 @@ class PyRun:                                                                    
          WINheight = (50+40*self._fun.func_code.co_argcount+40*extrarow)      # Adjust Height if under maximum.
       
       if paramlength >= 13:                                                   # Set default window width if over sMaximum number of lines for a window.
-         WINwidth = 1280
+         WINwidth = 1250
       else:
          if paramlength <= 5:                                                 # Set minimum window width
             WINwidth = 555
          else:
             WINwidth = (515+75*(paramlength-5))                               # Set intermediate window widths
-      root.geometry("%dx%d" %(WINwidth,WINheight))                            # Change Size of GUI to represent amount of variables
       
-      menu = Menu(root)                                                       # Create a menu
+      root = Tk()                                                             # Create Parent Window
+      root.title("%s" %self._fun.__name__)                                    # Name Window with Function Name
+      root.geometry("%dx%d" %(WINwidth,WINheight))                            # Change Size of GUI to represent amount of variables
+
+      menu = Menu(root,relief=RIDGE)                                          # Create a menu
       root.config(menu=menu)
       filemenu = Menu(menu)
       helpmenu = Menu(menu)
-      menu.add_cascade(label="Run", menu=filemenu)
-      filemenu.add_command(label="Run", command=self.Runbutton)
+      menu.add_cascade(label="File", menu=filemenu)
       filemenu.add_command(label="Check", command=self.Check)
       filemenu.add_command(label="Quit", command=self.Quit)
-      menu.add_cascade(label="Help", menu=helpmenu)
-      helpmenu.add_command(label="Help", command=self.helper)
+      menu.add_command(label="Run", command=self.Runbutton)
+      menu.add_command(label="Help", command=self.helper)
       
-      frame = Frame(root, bd=0)
-      frame.grid_rowconfigure(0, weight=0)
-      frame.grid_columnconfigure(0, weight=0)
+      frame = Frame(root, bd=0)                                               # Create Frame to Pack Canvas and Scrollbar that will hold widgets
+      frame.grid_rowconfigure(0, weight=0)                                    # Maintain Proper Dimensions with Frame
+      frame.grid_columnconfigure(0, weight=0)                                 # Maintain Proper Dimensions with Frame
       canvas = Canvas(frame)
       scrollbar = Scrollbar(frame)
       canvas.config(yscrollcommand=scrollbar.set)
       canvas['background'] = 'gray80'
       canvas['width'] = (WINwidth-20)
       canvas['height'] =(50+40*self._fun.func_code.co_argcount+40*extrarow)
-      canvas['scrollregion'] = (0, 0, 0, (70+40*self._fun.func_code.co_argcount+40*extrarow))
+      canvas['scrollregion'] = (0, 0, 0, (60+40*self._fun.func_code.co_argcount+40*extrarow))
       canvas.pack(side=LEFT)
       scrollbar.config(command=canvas.yview)
       scrollbar.pack(side=LEFT,fill=Y)
       frame.pack(anchor=N+W,fill=BOTH)
-
+      
       for a in range(self._fun.func_code.co_argcount):
          textvar = "tmp%d = StringVar()\n" %a                                          # Initilize Dynamic Variable to store default values to appear in GUI
          
@@ -380,8 +342,17 @@ class PyRun:                                                                    
          elif self.FieldlistOrder[a] == "INFILE":                                      # Make Infile if quoted in Docstring for current Variable
             DynInFile = "self.InFile%d = StringVar()" %(self.Ifieldentry)
             exec(DynInFile)
+            InFileSTR = ""
+            InFileSTR = InFileSTR + "def GetFile%d(self,event):\n" %a
+            InFileSTR = InFileSTR + "   currentdir = os.getcwd()\n"
+            InFileSTR = InFileSTR + "   filename = askopenfilename(initialdir=currentdir)\n"
+            InFileSTR = InFileSTR + "   if filename:\n"
+            InFileSTR = InFileSTR + "      self.InFile%d.set(filename)\n" %(self.Ifieldentry)
+            InFileSTR = InFileSTR + "PyRun.GetFile%d = GetFile%d" %(a,a)
+            exec(InFileSTR)
+            
             DISP.append("self.Field%d = Entry(root,textvariable=self.InFile%d,width=50,bd=1,background='White',selectbackground='Black')"%(a,self.Ifieldentry))
-            DISP.append("self.Field%d.bind('<Button-3>', self.GetFile)" %a)
+            DISP.append("self.Field%d.bind('<Button-3>', self.GetFile%d)" %(a,a))
             DISP.append("canvas.create_window(275, (15+%d), width=350, height=20,window=self.Field%d,anchor=CENTER)" %((a*40+40*self._place),a))
             DISP.append("self.Label%d_%d = Label(root,text='In',relief=RIDGE)" %(a,a))
             DISP.append("canvas.create_window(472, (15+%d), width=25, height=20,window=self.Label%d_%d,anchor=CENTER)" %((a*40+40*self._place),a,a))
@@ -389,8 +360,17 @@ class PyRun:                                                                    
          elif self.FieldlistOrder[a] == "OUTFILE":                                     # Make Outfile if quoted in Docstring for current Variable
             DynOutFile = "self.OutFile%d = StringVar()" %(self.Ofieldentry)
             exec(DynOutFile)
+            OutFileStr = ""
+            OutFileStr = OutFileStr + "def SaveFile%d(self,event):\n" %a
+            OutFileStr = OutFileStr + "   currentdir = os.getcwd()\n"
+            OutFileStr = OutFileStr + "   filename = asksaveasfilename(initialdir=currentdir)\n"
+            OutFileStr = OutFileStr + "   if filename:\n"
+            OutFileStr = OutFileStr + "      self.OutFile%d.set(filename)\n" %(self.Ofieldentry)
+            OutFileStr = OutFileStr + "PyRun.SaveFile%d = SaveFile%d" %(a,a)
+            exec(OutFileStr)
+            
             DISP.append("self.Field%d = Entry(root,textvariable=self.OutFile%d,width=50,bd=1,background='White',selectbackground='Black')" %(a,self.Ofieldentry))
-            DISP.append("self.Field%d.bind('<Button-3>', self.SaveFile)" %a)
+            DISP.append("self.Field%d.bind('<Button-3>', self.SaveFile%d)" %(a,a))
             DISP.append("canvas.create_window(275, (15+%d), width=350, height=20,window=self.Field%d,anchor=CENTER)" %((a*40+40*self._place),a))
             DISP.append("self.Label%d_%d = Label(root,text='Out',relief=RIDGE)" %(a,a))
             DISP.append("canvas.create_window(472, (15+%d), width=25, height=20,window=self.Label%d_%d,anchor=CENTER)" %((a*40+40*self._place),a,a))
@@ -401,15 +381,6 @@ class PyRun:                                                                    
       for d in range(len(DISP)):
          exec(DISP[d])
 
-      SelfContent = dir(self)                                                          # Make a list with contents of self
-      for a in range(self._argcnt):                                                    # Determine how many Infiles and Outfiles there are
-         for b in range(len(SelfContent)):
-            FieldStrIN = "InFile%d" %a
-            FieldStrOUT = "OutFile%d" %a
-            if str(SelfContent[b]) == FieldStrIN:
-               self.IFileTotal = self.IFileTotal+1
-            if str(SelfContent[b]) == FieldStrOUT:
-               self.OFileTotal = self.OFileTotal+1
 
       root.mainloop()
 
@@ -429,3 +400,4 @@ if __name__ == '__main__':
    command = "p = PyRun(%s)\n" %inFileFull
    command = command + "p.tkrun()"
    exec(command)
+   
