@@ -156,10 +156,12 @@ class PyRun:                                                                    
   def Reload(self):                                                             # Reload current function
     """Reload the current function"""
     print "reload: %s" % self.Infile
-    self.root.quit()
+    global reloadflag
+    global ProgCnt
+    reloadflag = 1
+    ProgCnt = 1
     self.root.destroy()
-    reload(self.Infile)
-    self.tkrun()
+    
 
 
   def Runbutton(self):                                                          # Create Function that returns values from GUI to needed program
@@ -190,7 +192,7 @@ class PyRun:                                                                    
 
   
   def Quit(self):                                                               # Quit Button Function
-     self.frame.quit()
+     self.root.quit()
   
         
   def helper(self):
@@ -271,6 +273,8 @@ class PyRun:                                                                    
      CheckWindow.pack(anchor=N+W,fill=BOTH)
      
   def tkrun(self):                                                              # Function to Create GUI
+     global ProgCnt
+     ProgCnt = 0
 
      DISP        = []                                                           # Create List of Dynamic Tkinter Classes depending on input function
      typelist    = []                                                           # List of relevant lines from the help document
@@ -419,7 +423,6 @@ class PyRun:                                                                    
      menu.add_command(label="Help", command=self.helper)
      
      frame = Frame(root, bd=0)                                               # Create Frame to Pack Canvas and Scrollbar that will hold widgets
-     self.frame = frame
      frame.grid_rowconfigure(0, weight=0)                                    # Maintain Proper Dimensions with Frame
      frame.grid_columnconfigure(0, weight=0)                                 # Maintain Proper Dimensions with Frame
      canvas = Canvas(frame)
@@ -454,7 +457,7 @@ class PyRun:                                                                    
         
         DISP.append("self.Label%d = Label(frame,text='%s:',relief=RIDGE)"\
         %(a,self._fun.func_code.co_varnames[a]))   # Create Label for each Variable
-        DISP.append("canvas.create_window(20, (15+%d), width=35, height=20,window=self.Label%d,anchor=CENTER)" %((a*40+40*self._place),a))
+        DISP.append("canvas.create_window(28, (15+%d), width=51, height=20,window=self.Label%d,anchor=CENTER)" %((a*40+40*self._place),a))
         
         if self.FieldlistOrder[a] == "ENTRY":                                         # Make Entry Class if quoted in Docstring for current Variable
            DISP.append("self.Field%d = Entry(root,textvariable=\
@@ -646,6 +649,8 @@ import os
 if __name__ == '__main__':
   
   inFileFull  = sys.argv[1]
+  reloadflag = 0
+  ProgCnt = 1
   
   if inFileFull == "--help":
      ProgramHelp()
@@ -653,28 +658,33 @@ if __name__ == '__main__':
      ProgramList = inFileFull.split(':')
 
      for ProgIdx in range(len(ProgramList)):
-        inFileSplt  = ProgramList[ProgIdx].split('.')
-        inFile      = inFileSplt[0]
+        while ProgCnt == 1:
+           inFileSplt  = ProgramList[ProgIdx].split('.')
+           inFile      = inFileSplt[0]
   
-        importstr = "import %s" %inFile
-        exec(importstr)
+           importstr = "import %s" %inFile
+           exec(importstr)
      
-        if len(inFileSplt) == 1:
-           LengthFlag = 1
-        else:
-           LengthFlag = 0
-
-        if len(sys.argv) == 3 and sys.argv[2] == 'MirRUN' or len(sys.argv) == 3 and sys.argv[2] == 'SysRUN':
-           ProgramFlag = 1
-           if sys.argv[2] == 'MirRUN':
-              RunTypeFlag = 'Miriad'
+           if len(inFileSplt) == 1:
+              LengthFlag = 1
            else:
-              RunTypeFlag = 'System'
-        else:
-           ProgramFlag = 0
+              LengthFlag = 0
 
-        command = "p = PyRun(%s,%s,%s,%s)\n" %(ProgramList[ProgIdx],inFile,LengthFlag,ProgramFlag)
-        command = command + "p.tkrun()"
-        print "DEBUG: exec(%s)" % command
-        exec(command)
-        print "All done with %s" % inFile
+           if len(sys.argv) == 3 and sys.argv[2] == 'MirRUN' or len(sys.argv) == 3 and sys.argv[2] == 'SysRUN':
+              ProgramFlag = 1
+              if sys.argv[2] == 'MirRUN':
+                 RunTypeFlag = 'Miriad'
+              else:
+                 RunTypeFlag = 'System'
+           else:
+              ProgramFlag = 0
+
+           command = "p = PyRun(%s,%s,%s,%s)\n" %(ProgramList[ProgIdx],inFile,LengthFlag,ProgramFlag)
+           command = command + "p.tkrun()"
+           print "DEBUG: exec(%s)" % command
+           exec(command)
+           if ProgCnt == 1:
+              reloadstr = "reload(%s)" %inFile
+              exec(reloadstr)
+
+     print "All done with %s" % ProgramList
