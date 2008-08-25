@@ -24,6 +24,7 @@ class PyRun:                                                                    
      self.StringNumber =[]                                                      # A list to keep track of InFiles Entries in order to split string
      self.Program = str(infile)                                                 # Parent Program
      self.ProgramFlag = programflag                                             # Flag to run a function or entire program
+     self.Infile = infile
      
      tmp = self.Program.split("'")
      self.ProgramName = "%s.py" %tmp[1]
@@ -152,6 +153,15 @@ class PyRun:                                                                    
      return PassList                                                            # Pass List of GUI Entries
   
   
+  def Reload(self):                                                             # Reload current function
+    """Reload the current function"""
+    print "reload: %s" % self.Infile
+    self.root.quit()
+    self.root.destroy()
+    reload(self.Infile)
+    self.tkrun()
+
+
   def Runbutton(self):                                                          # Create Function that returns values from GUI to needed program
      """Run Button Function"""
      FncList = self.GetValues()                                                 # Store List of entered GUI values
@@ -180,7 +190,7 @@ class PyRun:                                                                    
 
   
   def Quit(self):                                                               # Quit Button Function
-     sys.exit()
+     self.frame.quit()
   
         
   def helper(self):
@@ -390,6 +400,7 @@ class PyRun:                                                                    
            WINwidth = (515+75*(paramlength-5))                               # Set intermediate window widths
      
      root = Tk()                                                             # Create Parent Window
+     self.root = root
      if self.ProgramFlag == 0:
         root.title("%s" %self._fun.__name__)                                    # Name Window with Function Name
      else:
@@ -402,11 +413,13 @@ class PyRun:                                                                    
      helpmenu = Menu(menu)
      menu.add_cascade(label="File", menu=filemenu)
      filemenu.add_command(label="Check", command=self.Check)
+     filemenu.add_command(label="Reload", command=self.Reload)
      filemenu.add_command(label="Quit", command=self.Quit)
      menu.add_command(label="Run", command=self.Runbutton)
      menu.add_command(label="Help", command=self.helper)
      
      frame = Frame(root, bd=0)                                               # Create Frame to Pack Canvas and Scrollbar that will hold widgets
+     self.frame = frame
      frame.grid_rowconfigure(0, weight=0)                                    # Maintain Proper Dimensions with Frame
      frame.grid_columnconfigure(0, weight=0)                                 # Maintain Proper Dimensions with Frame
      canvas = Canvas(frame)
@@ -520,7 +533,7 @@ class PyRun:                                                                    
            exec(InFileSTR)
            
            DISP.append("self.Field%d = Entry(root,textvariable=self.InFile%d,width=50,bd=1,background='White',selectbackground='Black')"%(a,self.Ifieldentry))
-           DISP.append("self.Field%d.bind('<Button-3>', self.GetFile%d)" %(a,a))
+           DISP.append("self.Field%d.bind('<Button-1>', self.GetFile%d)" %(a,a))
            DISP.append("canvas.create_window(275, (15+%d), width=350, height=20,window=self.Field%d,anchor=CENTER)" %((a*40+40*self._place),a))
            DISP.append("self.Label%d_%d = Label(root,text='In',relief=RIDGE)" %(a,a))
            DISP.append("canvas.create_window(470, (15+%d), width=25, height=20,window=self.Label%d_%d,anchor=CENTER)" %((a*40+40*self._place),a,a))
@@ -543,7 +556,7 @@ class PyRun:                                                                    
            exec(InFilesSTR)
            
            DISP.append("self.Field%d = Entry(root,textvariable=self.InFiles%d,width=50,bd=1,background='White',selectbackground='Black')"%(a,self.Ifieldentries))
-           DISP.append("self.Field%d.bind('<Button-3>', self.GetFiles%d)" %(a,a))
+           DISP.append("self.Field%d.bind('<Button-1>', self.GetFiles%d)" %(a,a))
            DISP.append("canvas.create_window(275, (15+%d), width=350, height=20,window=self.Field%d,anchor=CENTER)" %((a*40+40*self._place),a))
            DISP.append("self.Label%d_%d = Label(root,text='InFiles',relief=RIDGE)" %(a,a))
            DISP.append("canvas.create_window(482, (15+%d), width=40, height=20,window=self.Label%d_%d,anchor=CENTER)" %((a*40+40*self._place),a,a))
@@ -563,7 +576,7 @@ class PyRun:                                                                    
            exec(OutFileStr)
            
            DISP.append("self.Field%d = Entry(root,textvariable=self.OutFile%d,width=50,bd=1,background='White',selectbackground='Black')" %(a,self.Ofieldentry))
-           DISP.append("self.Field%d.bind('<Button-3>', self.SaveFile%d)" %(a,a))
+           DISP.append("self.Field%d.bind('<Button-1>', self.SaveFile%d)" %(a,a))
            DISP.append("canvas.create_window(275, (15+%d), width=350, height=20,window=self.Field%d,anchor=CENTER)" %((a*40+40*self._place),a))
            DISP.append("self.Label%d_%d = Label(root,text='Out',relief=RIDGE)" %(a,a))
            DISP.append("canvas.create_window(472, (15+%d), width=25, height=20,window=self.Label%d_%d,anchor=CENTER)" %((a*40+40*self._place),a,a))
@@ -583,7 +596,7 @@ class PyRun:                                                                    
            exec(DirFileSTR)
            
            DISP.append("self.Field%d = Entry(root,textvariable=self.DirFile%d,width=50,bd=1,background='White',selectbackground='Black')"%(a,self.DirFieldentry))
-           DISP.append("self.Field%d.bind('<Button-3>', self.GetDir%d)" %(a,a))
+           DISP.append("self.Field%d.bind('<Button-1>', self.GetDir%d)" %(a,a))
            DISP.append("canvas.create_window(275, (15+%d), width=350, height=20,window=self.Field%d,anchor=CENTER)" %((a*40+40*self._place),a))
            DISP.append("self.Label%d_%d = Label(root,text='Dir',relief=RIDGE)" %(a,a))
            DISP.append("canvas.create_window(472, (15+%d), width=25, height=20,window=self.Label%d_%d,anchor=CENTER)" %((a*40+40*self._place),a,a))
@@ -662,4 +675,6 @@ if __name__ == '__main__':
 
         command = "p = PyRun(%s,%s,%s,%s)\n" %(ProgramList[ProgIdx],inFile,LengthFlag,ProgramFlag)
         command = command + "p.tkrun()"
+        print "DEBUG: exec(%s)" % command
         exec(command)
+        print "All done with %s" % inFile
