@@ -16,17 +16,17 @@ def foo(z=0,a=1,b=2,c=3,d=4,e=5,f='test',g='test',h='test',i='test',j='test',k='
    e is designed to try and break the code
    This function has 3 parameters, a,b,c"""
    
-   print 'z=',z
-   print 'a=',a
-   print 'b=',b
-   print 'c=',c
-   print 'd=',d
-   print 'e=',e
+   print('z=',z)
+   print('a=',a)
+   print('b=',b)
+   print('c=',c)
+   print('d=',d)
+   print('e=',e)
     
 def bar(name):
-   print "we are going to run name=",name.__name__
+   print("we are going to run name=",name.__name__)
    name(0,1,2,3)
-   print "and one more time:"
+   print("and one more time:")
    name(0,c=1,b=2,a=3)
     
 if __name__ == '__main__':
