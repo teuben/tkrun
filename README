@@ -45,5 +45,7 @@ down..
 Also check out some python products:
 optfunc:     http://github.com/simonw/optfunc/tree/master
 
+Note tkrun is really maintained within NEMO now.   $NEMO/usr/tools/tkrun
+
 - Peter Teuben
 
