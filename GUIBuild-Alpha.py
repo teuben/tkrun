@@ -1,34 +1,35 @@
 #! /bin/env python
 # Last Modified on 08-18-08 by Brian J. Prager
 
+import sys
 
 class PyRun:                                                                     # Begin Class to build GUI
    """class to run functions under different environments"""
    def __init__(self, fun, infile, lengthflag, programflag):
-		self._fun = fun                                                            # Store the Function
-     
-		if lengthflag == 1:
-			print 'Please Provide Function containing GUI information.'
-			self.Quit()
-     
-		self._argcnt = fun.func_code.co_argcount                                   # Store Number of Arguments in Function passed to PyRun
-		self._radcount = 0                                                         # Variable to work with Radio Widgets
-		self._checkcount = 0                                                       # Variable to work with Check Widgets
-		self._statecount = 0                                                       # Variable to work with Check Widgets
-		self._place = 0                                                            # Variable to help with window geometry
-		self._HELPList = []                                                        # List to Store Help Info from Doc String
-		self.Ifieldentry =0                                                        # Variable to help with Infile Entries
-		self.Ifieldentries =0                                                      # Variable to help with Infiles Entries
-		self.Ofieldentry =0                                                        # Variable to help with Outfile Entries
-		self.DirFieldentry=0                                                       # Variable to help with Directory Entries
-		self.StringNumber =[]                                                      # A list to keep track of InFiles Entries in order to split string
-		self.Program = str(infile)                                                 # Parent Program
-		self.ProgramFlag = programflag                                             # Flag to run a function or entire program
-		self.Infile = infile
-     
-		tmp = self.Program.split("'")
-		self.blah = tmp[1]
-		self.ProgramName = "%s.py" %tmp[1]
+      self._fun = fun                                                            # Store the Function
+      
+      if lengthflag == 1:
+         print('Please Provide Function containing GUI information.')
+         self.Quit()
+         
+         self._argcnt = fun.__code__.co_argcount                                   # Store Number of Arguments in Function passed to PyRun
+         self._radcount = 0                                                         # Variable to work with Radio Widgets
+         self._checkcount = 0                                                       # Variable to work with Check Widgets
+         self._statecount = 0                                                       # Variable to work with Check Widgets
+         self._place = 0                                                            # Variable to help with window geometry
+         self._HELPList = []                                                        # List to Store Help Info from Doc String
+         self.Ifieldentry =0                                                        # Variable to help with Infile Entries
+         self.Ifieldentries =0                                                      # Variable to help with Infiles Entries
+         self.Ofieldentry =0                                                        # Variable to help with Outfile Entries
+         self.DirFieldentry=0                                                       # Variable to help with Directory Entries
+         self.StringNumber =[]                                                      # A list to keep track of InFiles Entries in order to split string
+         self.Program = str(infile)                                                 # Parent Program
+         self.ProgramFlag = programflag                                             # Flag to run a function or entire program
+         self.Infile = infile
+         
+         tmp = self.Program.split("'")
+         self.blah = tmp[1]
+         self.ProgramName = "%s.py" %tmp[1]
      
    def GetValues(self):
       """Function to Grab Entries in the GUI"""
@@ -92,7 +93,7 @@ class PyRun:                                                                    
                   elif self.EntryTypeOrder[d] == 'm':
                      MixOrderList = self.MixEntryTypeOrder[d].split(':')
                      if len(PassList[d]) != len(MixOrderList):
-                        print "Incorrect Number of Arguments for Mixed Data Types!"
+                        print("Incorrect Number of Arguments for Mixed Data Types!")
                         self.Quit()
                      if MixOrderList[e] == 'f':
                         tmpCheckList.append(float(PassList[d][e]))
@@ -101,7 +102,7 @@ class PyRun:                                                                    
                      elif MixOrderList[e] == 's':
                         tmpCheckList.append(str(PassList[d][e]))
                      else:
-                        print 'Unsupported Format Used in Mix Data Types!'
+                        print('Unsupported Format Used in Mix Data Types!')
                         self.Quit()
             PassList[d] = tmpCheckList
       for f in range(self._argcnt):
@@ -125,7 +126,7 @@ class PyRun:                                                                    
             elif self.EntryTypeOrder[g] == 's':
                pass
             else:
-               print "Wrong variable format put into Entry Format!"
+               print("Wrong variable format put into Entry Format!")
                self.Quit()
       if len(self.RadioTypeList) > 0:                                            # Change type for Radio entries
          for z in range(len(self.RadioTypeList)):
@@ -135,7 +136,7 @@ class PyRun:                                                                    
                   ParamList = self.ParamlistOrder[idx].split(',')
                   MixList = self.MixEntryTypeOrder[idx].split(':')
                   if len(ParamList) != len(MixList):
-                     print "Incorrect Number of Arguments for Mixed List!"
+                     print("Incorrect Number of Arguments for Mixed List!")
                      self.Quit()
                   for b in range(len(ParamList)):
                      if PassList[idx] == ParamList[b]:
@@ -146,7 +147,7 @@ class PyRun:                                                                    
                         elif MixList[b] == 'i':
                            TypeChangeRadio = int(PassList[idx])
                         else:
-                           print "Wrong variable format put into mixed formating!"
+                           print("Wrong variable format put into mixed formating!")
                            self.Quit()
                else:
                   TypeChangeRadio = PassList[idx]
@@ -156,7 +157,7 @@ class PyRun:                                                                    
   
    def Reload(self):                                                             # Reload current function
       """Reload the current function"""
-      print "reload: %s" % self.Infile
+      print("reload: %s" % self.Infile)
       global ProgCnt
       ProgCnt = 1
       self.root.destroy()
@@ -170,7 +171,7 @@ class PyRun:                                                                    
          if RunTypeFlag == 'System':
             for a in range(self._argcnt):
                ProgramRunStr = ProgramRunStr + "%s " %FncList[a]
-            print ProgramRunStr
+            print(ProgramRunStr)
             os.system(ProgramRunStr)
          elif RunTypeFlag == 'Miriad':
             for b in range(self._argcnt):
@@ -227,18 +228,18 @@ class PyRun:                                                                    
       CheckWindowtop.geometry("595x330")
       text=Text(CheckWindow)
            
-      if self._fun.func_defaults != None:
+      if self._fun.__defaults__ != None:
          text.insert(END,"Default Arguments Passed to Function:\n")
-         if len(self._fun.func_code.co_varnames) == len(self._fun.func_defaults):   # Check if Each Argument has been defined in call to function
-            for a in range(len(self._fun.func_code.co_varnames)):
-               text.insert(END,"%2s= %s \n" %(self._fun.func_code.co_varnames[a],\
-               self._fun.func_defaults[a]))
+         if len(self._fun.__code__.co_varnames) == len(self._fun.__defaults__):   # Check if Each Argument has been defined in call to function
+            for a in range(len(self._fun.__code__.co_varnames)):
+               text.insert(END,"%2s= %s \n" %(self._fun.__code__.co_varnames[a],\
+               self._fun.__defaults__[a]))
          else:                                                                      # If Each Argument is not Defined, then Display Values found by Docstring
             text.insert(END,"Note: Not all arguments defined in pass to "+\
             "function.Missing values provided by docstring.\n")
             ArgFlag=1
-            for b in range(len(self._fun.func_code.co_varnames)):
-               text.insert(END,"%2s= %s \n" %(self._fun.func_code.co_varnames[b],\
+            for b in range(len(self._fun.__code__.co_varnames)):
+               text.insert(END,"%2s= %s \n" %(self._fun.__code__.co_varnames[b],\
                self.ValuelistOrder[b]))
       else:
          ArgFlag=1 
@@ -249,13 +250,13 @@ class PyRun:                                                                    
             text.insert(END,"%2s= %s \n" %(self.VarlistOrder[c],self.ValuelistOrder[c]))
          else:
             text.insert(END,"%2s= (Not Defined in Doc String) \n" %(self._fun.\
-            func_code.co_varnames[c]))
+            __code__.co_varnames[c]))
             DocFlag=1
       
       text.insert(END,"\nArguments To be passed to function by GUI:\n")
       ArgCheckList = self.GetValues()                                            # Get Current Values in the GUI
-      for d in range(len(self._fun.func_code.co_varnames)):
-         text.insert(END,"%2s= %s \n" %(self._fun.func_code.co_varnames[d],ArgCheckList[d]))
+      for d in range(len(self._fun.__code__.co_varnames)):
+         text.insert(END,"%2s= %s \n" %(self._fun.__code__.co_varnames[d],ArgCheckList[d]))
       if ArgFlag == 1:
          text.insert(END,"\nFor best results, please pass defaults values to each argument.")
       if DocFlag == 1:
@@ -289,7 +290,7 @@ class PyRun:                                                                    
       self.MixEntryTypeOrder   = []                                              # Reordered MixEntryType to represent how variables are called in function
       
       if self._fun.__doc__ == None:
-         print "ERROR: Missing Document String"
+         print("ERROR: Missing Document String")
          self.Quit()
       document = self._fun.__doc__                                               # Read in Document String for Function
       if document[0][0] == '!':
@@ -330,7 +331,7 @@ class PyRun:                                                                    
          else:
             MixEntryType.append('')
     
-      for c in range(self._fun.func_code.co_argcount):                           # Begin loop to sort document information into order it appears in function
+      for c in range(self._fun.__code__.co_argcount):                           # Begin loop to sort document information into order it appears in function
          flag = 0
          self.FieldlistOrder.append('')
          self.VarlistOrder.append('')
@@ -340,7 +341,7 @@ class PyRun:                                                                    
          self.MixEntryTypeOrder.append('')
          
          for d in range(len(Varlist)):
-            if self._fun.func_code.co_varnames[c] == Varlist[d]:
+            if self._fun.__code__.co_varnames[c] == Varlist[d]:
                self.VarlistOrder[c]   = Varlist[d]
                self.FieldlistOrder[c] = Fieldlist[d]
                self.ParamlistOrder[c] = Paramlist[d]
@@ -361,7 +362,7 @@ class PyRun:                                                                    
                   self.MixEntryTypeOrder[c] = 'BLANK'
                  
                flag = 1
-            elif self._fun.func_code.co_varnames[c] != Varlist[d] and flag == 0:
+            elif self._fun.__code__.co_varnames[c] != Varlist[d] and flag == 0:
                self.VarlistOrder[c]      = 'BLANK'
                self.FieldlistOrder[c]    = 'BLANK'
                self.ParamlistOrder[c]    = 'BLANK'
@@ -370,9 +371,9 @@ class PyRun:                                                                    
                self.MixEntryTypeOrder[c] = 'BLANK'              
             else:
                pass
-      for e in range(self._fun.func_code.co_argcount):
+      for e in range(self._fun.__code__.co_argcount):
          if self.VarlistOrder[e] == 'BLANK':
-            self.VarlistOrder[e] = self._fun.func_code.co_varnames[e]
+            self.VarlistOrder[e] = self._fun.__code__.co_varnames[e]
          else:
             pass
 
@@ -385,12 +386,12 @@ class PyRun:                                                                    
          else:
             pass
          if len(paramtmp) > 13:
-            extrarow = extrarow + long(len(paramtmp)/13)                      # Find how many extra lines on the window are needed for extra rows of parameters
+            extrarow = extrarow + int(len(paramtmp)/13)                      # Find how many extra lines on the window are needed for extra rows of parameters
       
-      if (self._fun.func_code.co_argcount+extrarow) >= 17:                    # Set default window height if over sMaximum number of lines for a window.
+      if (self._fun.__code__.co_argcount+extrarow) >= 17:                    # Set default window height if over sMaximum number of lines for a window.
          WINheight = 1000
       else:
-         WINheight = (50+40*self._fun.func_code.co_argcount+40*extrarow)      # Adjust Height if under maximum.
+         WINheight = (50+40*self._fun.__code__.co_argcount+40*extrarow)      # Adjust Height if under maximum.
       
       if paramlength >= 13:                                                   # Set default window width if over sMaximum number of lines for a window.
          WINwidth = 1250
@@ -427,23 +428,23 @@ class PyRun:                                                                    
       canvas.config(yscrollcommand=scrollbar.set)
       canvas['background'] = 'gray80'
       canvas['width'] = (WINwidth-20)
-      canvas['height'] =(50+40*self._fun.func_code.co_argcount+40*extrarow)
-      canvas['scrollregion'] = (0, 0, 0, (60+40*self._fun.func_code.co_argcount+40*extrarow))
+      canvas['height'] =(50+40*self._fun.__code__.co_argcount+40*extrarow)
+      canvas['scrollregion'] = (0, 0, 0, (60+40*self._fun.__code__.co_argcount+40*extrarow))
       canvas.pack(side=LEFT)
       scrollbar.config(command=canvas.yview)
       scrollbar.pack(side=LEFT,fill=Y)
       frame.pack(anchor=N+W,fill=BOTH)
      
      
-      if self._fun.func_defaults != None:
-         if len(self._fun.func_defaults) == (self._fun.func_code.co_argcount) and inputflag == 0: #Determine where to grab default entries from
+      if self._fun.__defaults__ != None:
+         if len(self._fun.__defaults__) == (self._fun.__code__.co_argcount) and inputflag == 0: #Determine where to grab default entries from
             DefaultSource = 1
          else:
             DefaultSource=0
       else:
          DefaultSource=0
 
-      for a in range(self._fun.func_code.co_argcount):
+      for a in range(self._fun.__code__.co_argcount):
          textvar = "tmp%d = StringVar()\n" %a
          if DefaultSource == 1:
             textvar = textvar + "tmp%d.set(%s.%s.func_defaults[%d])" %(a,self._fun.__module__,self._fun.__name__,a)
@@ -453,7 +454,7 @@ class PyRun:                                                                    
          exec(textvar)                                                                 # Make Static Version of each Dynamic Variable
          
          DISP.append("self.Label%d = Label(frame,text='%s:',relief=RIDGE)"\
-         %(a,self._fun.func_code.co_varnames[a]))   # Create Label for each Variable
+         %(a,self._fun.__code__.co_varnames[a]))   # Create Label for each Variable
          DISP.append("canvas.create_window(28, (15+%d), width=51, height=20,window=self.Label%d,anchor=CENTER)" %((a*40+40*self._place),a))
         
          if self.FieldlistOrder[a] == "ENTRY":                                         # Make Entry Class if quoted in Docstring for current Variable
@@ -484,11 +485,11 @@ class PyRun:                                                                    
                
                DISP.append("self.Field%d = Checkbutton(root, text='%s',variable=self.CheckVar%d)" %(a,str(Checklist[b]),self._checkcount))
                DISP.append("canvas.create_window(%d, (15+%d), width=60, height=20,window=self.Field%d,anchor=CENTER)"\
-               %((150+long((b-13*long(b/13))*75)),(a*40+long(b/13)*40+40*self._place),a))
+               %((150+int((b-13*int(b/13))*75)),(a*40+int(b/13)*40+40*self._place),a))
                DISP.append("self._states%d.append(self.CheckVar%d)" %(self._statecount,self._checkcount))
             
             if len(Checklist) >= 13:
-               self._place=self._place+long(len(Checklist)/13)
+               self._place=self._place+int(len(Checklist)/13)
             self.StringNumber.append('')
          elif self.FieldlistOrder[a] == "RADIO":                                       # Make Radio Class if quoted in Docstring for current Variable
             Radiolist = self.ParamlistOrder[a].split(',')
@@ -506,7 +507,7 @@ class PyRun:                                                                    
                elif self.EntryTypeOrder[a] == 'm':
                   DynRadioVar = "self.RadioVar%d = StringVar()" %(self._radcount)
                else:
-                  print 'Unsupported Format Used in Mix Data Types!'
+                  print('Unsupported Format Used in Mix Data Types!')
                   self.Quit()
                exec(DynRadioVar)
 
@@ -514,10 +515,10 @@ class PyRun:                                                                    
                variable=self.RadioVar%d)" %(a,str(Radiolist[c]),Radiolist[c],\
                self._radcount))
                DISP.append("canvas.create_window(%d, (15+%d), width=60, height=20,window=self.Field%d,anchor=CENTER)"\
-               %((150+long((c-13*long(c/13))*75)),(a*40+long(c/13)*40+40*self._place),a))
+               %((150+int((c-13*int(c/13))*75)),(a*40+int(c/13)*40+40*self._place),a))
             
             if len(Radiolist) >= 13:
-               self._place=self._place+long(len(Radiolist)/13)
+               self._place=self._place+int(len(Radiolist)/13)
             self.StringNumber.append('')
          elif self.FieldlistOrder[a] == "INFILE":                                      # Make Infile if quoted in Docstring for current Variable
             DynInFile = "self.InFile%d = StringVar()" %(self.Ifieldentry)
@@ -613,34 +614,34 @@ class PyRun:                                                                    
       root.mainloop()
 
 def ProgramHelp():
-   print "Code Designed to Automatically Create a GUI for functions with the proper doc string."
-   print "Example Usage: GUIBuild.py pyrunpull.foo [Where pyrunpull is a program, and foo is a function.]"
-   print "Example Document String Format:\n\n"
-   print "#> ENTRY a=1"
-   print "a is an example Entry Widget which may default to 1 if no value is passed through the function. It can also take '.i' and '.f' formating"+\
-         "to change the type to integer or float."
-   print "#> SCALE b=2 0:10:.1"
-   print "b is an example Scale Widget. It may default to 2 if no value is passed through the function, and it spans 0 to 10 in increments of .1."
-   print "#> CHECK.m c= String,1,3.14 s:i:f"
-   print "c is an example of the Checkbutton Widget. It has no default, but will display a list of options (String,1, or 3.14). CHECK may be called"+\
+   print("Code Designed to Automatically Create a GUI for functions with the proper doc string.")
+   print("Example Usage: GUIBuild.py pyrunpull.foo [Where pyrunpull is a program, and foo is a function.]")
+   print("Example Document String Format:\n\n")
+   print("#> ENTRY a=1")
+   print("a is an example Entry Widget which may default to 1 if no value is passed through the function. It can also take '.i' and '.f' formating"+\
+         "to change the type to integer or float.")
+   print("#> SCALE b=2 0:10:.1")
+   print("b is an example Scale Widget. It may default to 2 if no value is passed through the function, and it spans 0 to 10 in increments of .1.")
+   print("#> CHECK.m c= String,1,3.14 s:i:f")
+   print("c is an example of the Checkbutton Widget. It has no default, but will display a list of options (String,1, or 3.14). CHECK may be called"+\
          "'.m','.s','.f','.i', or nothing at all. If nothing is provided, the entries will default to string format. '.s' will also provide string"+\
          "format, whereas '.f' and '.i' correspond to float and integer. '.m' indicates a mixed type check list. If '.m' is used, all entries must"+\
          "be designated a type, and this is to be placed into the format as shown above. One space away from the list of entry values, and put into"+\
-         "a list of datatypes separated by a colon. '.m' is the only format that strictly requires the list of data types to be present"
-   print "\n#> Tells the program where to look for information needed to build the GUI. Any line without this will be parsed into the help menu.\n"
-   print "Additional Widgets:"
-   print "   INFILE : Allows user to right click an entry form to bring up file browser to choose single file to read."
-   print "   OUTFILE : Allows user to right click an entry form to bring up file browser to choose single file to write to."
-   print "   OPENDIR : Allows user to right click and bring up a directory browser to choose a directory."
-   print "   INFILES : Allows user to right click and bring up a file browser where they may choose multiple files. Files will display as a string"+\
-         "with files separated by a '||' to be parsed by the GUI before passing it to the called function as a list."
-   print "   RADIO : A radio checklist. It takes the similar formating options as CHECK."
+         "a list of datatypes separated by a colon. '.m' is the only format that strictly requires the list of data types to be present")
+   print("\n#> Tells the program where to look for information needed to build the GUI. Any line without this will be parsed into the help menu.\n")
+   print("Additional Widgets:")
+   print("   INFILE : Allows user to right click an entry form to bring up file browser to choose single file to read.")
+   print("   OUTFILE : Allows user to right click an entry form to bring up file browser to choose single file to write to.")
+   print("   OPENDIR : Allows user to right click and bring up a directory browser to choose a directory.")
+   print("   INFILES : Allows user to right click and bring up a file browser where they may choose multiple files. Files will display as a string"+\
+         "with files separated by a '||' to be parsed by the GUI before passing it to the called function as a list.")
+   print("   RADIO : A radio checklist. It takes the similar formating options as CHECK.")
 
-from Tkinter import *
-from tkFileDialog import askopenfilename
-from tkFileDialog import askopenfilenames
-from tkFileDialog import asksaveasfilename
-from tkFileDialog import askdirectory
+from tkinter import *
+from tkinter.filedialog import askopenfilename
+from tkinter.filedialog import askopenfilenames
+from tkinter.filedialog import asksaveasfilename
+from tkinter.filedialog import askdirectory
 import os
 
 if __name__ == '__main__':
@@ -677,10 +678,10 @@ if __name__ == '__main__':
 
             command = "p = PyRun(%s,%s,%s,%s)\n" %(ProgramList[ProgIdx],inFile,LengthFlag,ProgramFlag)
             command = command + "p.tkrun()"
-            print "DEBUG: exec(%s)" % command
+            print("DEBUG: exec(%s)" % command)
             exec(command)
             if ProgCnt == 1:
                reloadstr = "reload(%s)" %inFile
                exec(reloadstr)
 
-      print "All done with %s" % ProgramList
+      print("All done with %s" % ProgramList)
