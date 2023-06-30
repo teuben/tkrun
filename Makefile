@@ -49,3 +49,6 @@ dist:
 	rm -rf tkrun-$(VERSION)
 	scp tkrun-$(VERSION).tar.gz $(FTPDIR)
 
+
+test:
+	python3 GUIBuild-Alpha.py foo.foo
