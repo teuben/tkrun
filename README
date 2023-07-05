@@ -1,3 +1,12 @@
+NOTE: this is an old repo, converted from CVS to github.   The current version
+of tkrun.c is in $NEMO/src/tools/tkrun.
+The python interface is experimental, was working under python2 in 2008,
+but currently is broken in python3. See 
+
+
+
+
+
 tkrun is a tk script generator allows you to build a Tcl/Tk GUI that
 executes another program or script. You don't need to learn Tcl/Tk
 (although that is still much easier than learning to program a GUI in a
